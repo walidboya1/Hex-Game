@@ -1,7 +1,7 @@
 var i, j, k, IsOver=true, IsStart0, Start, Start0, Size=11, IsRunning=false, LastEvent="";
 var MoveCount, MaxMoveCount, MaxFld=Size*Size, IsSwap, ActiveColor=0;
 IsPlayer = new Array(2);
-Level = new Array(2);  
+Level = new Array(2);
 ImgNum = new Array(Size);
 for (i=0; i<Size; i++)
   ImgNum[i] = new Array(Size);
@@ -10,21 +10,21 @@ for (i=0; i<Size; i++)
   Fld[i] = new Array(Size);
 Pot = new Array(Size);
 for (i=0; i<Size; i++)
-  Pot[i] = new Array(Size); 
+  Pot[i] = new Array(Size);
 for (i=0; i<Size; i++)
 { for (j=0; j<Size; j++)
-    Pot[i][j] = new Array(4); 
+    Pot[i][j] = new Array(4);
 }
 Bridge = new Array(Size);
 for (i=0; i<Size; i++)
-  Bridge[i] = new Array(Size); 
+  Bridge[i] = new Array(Size);
 for (i=0; i<Size; i++)
 { for (j=0; j<Size; j++)
-    Bridge[i][j] = new Array(4); 
+    Bridge[i][j] = new Array(4);
 }
 Upd = new Array(Size);
 for (i=0; i<Size; i++)
-  Upd[i] = new Array(Size); 
+  Upd[i] = new Array(Size);
 History = new Array(MaxFld+1);
 for (i=0; i<MaxFld+1; i++)
   History[i] = new Array(2);
@@ -43,7 +43,7 @@ Level[0]=2;
 Level[1]=3;
 
 function Init()
-{ if (IsRunning) { LastEvent="Init()"; return; }  
+{ if (IsRunning) { LastEvent="Init()"; return; }
   var ii, jj;
   for (ii=0; ii<Size; ii++)
   { for (jj=0; jj<Size; jj++)
@@ -57,27 +57,37 @@ function Init()
   WritePot(true);
   IsOver=false;
   if ((MoveCount+Start0)%2==0) window.document.OptionsForm.Msg.value=" Blue to move.";
-  else window.document.OptionsForm.Msg.value=" Red to move.";    
+  else window.document.OptionsForm.Msg.value=" Red to move.";
 }
 
 function SetOption(nn, mm)
-{ if (IsRunning) { LastEvent="SetOption("+nn+","+mm+")"; return; }  
-  if (nn<2) 
+{ if (IsRunning) { LastEvent="SetOption("+nn+","+mm+")"; return; }
+  if (nn<2)
   { if (mm==0)
       IsPlayer[nn]=true;
     else
       IsPlayer[nn]=false;
   }
-  else IsStart0=mm; 
+  else IsStart0=mm;
 }
 
 function SetLevel(nn, mm)
-{ if (IsRunning) { LastEvent="SetLevel("+nn+","+mm+")"; return; }  
+{ if (IsRunning) { LastEvent="SetLevel("+nn+","+mm+")"; return; }
   Level[nn]=mm;
 }
 
 var IsAI=0;
-
+function ShowAI(bb)
+{ var ww;
+  IsAI=bb;
+  if (IsAI)
+  { WritePot(true);
+    document.getElementById('AI').style.display='inline';
+    ww=parseInt(window.top.innerWidth);
+    if (ww<840) window.top.resizeBy(840-ww, 0);
+  }
+  else document.getElementById('AI').style.display='none';
+}
 
 function Timer()
 { if (LastEvent!="")
@@ -90,13 +100,12 @@ function Timer()
   if (IsPlayer[(MoveCount+Start0+1)%2]) { WritePot(true); return; }
   IsRunning=true;
   var ll=Level[(MoveCount+Start0+1)%2];
-  if (SwapTest()) return;
-  GetPot(ll);  
+  GetPot(ll);
   setTimeout("GetBestMove("+eval(((MoveCount+1+Start0)%2)*2-1)+","+ll+")",10);
 }
 
 function Back()
-{ if (IsRunning) { LastEvent="Back()"; return; }  
+{ if (IsRunning) { LastEvent="Back()"; return; }
   if (MoveCount>0)
   { IsOver=false;
     MoveCount--;
@@ -111,24 +120,24 @@ function Back()
     else
     { Fld[ii][jj]=0;
       RefreshPic(ii, jj);
-    }  
+    }
     if (MoveCount<10)
       window.document.OptionsForm.Moves.value=" "+eval(MoveCount)+" ";
     else
       window.document.OptionsForm.Moves.value=MoveCount;
     if ((MoveCount+Start0)%2==0) window.document.OptionsForm.Msg.value=" Blue to move.";
-    else window.document.OptionsForm.Msg.value=" Red to move.";  
-    WritePot(true);        
+    else window.document.OptionsForm.Msg.value=" Red to move.";
+    WritePot(true);
   }
 }
 
 function Replay()
-{ if (IsRunning) { LastEvent="Replay()"; return; }  
+{ if (IsRunning) { LastEvent="Replay()"; return; }
   if (MoveCount<MaxMoveCount)
   { var ii=History[MoveCount][0];
     var jj=History[MoveCount][1];
-    if (MoveCount<MaxMoveCount-1) { MakeMove(ii, jj, false); WritePot(true); }  
-    else MakeMove(ii, jj, true);     
+    if (MoveCount<MaxMoveCount-1) { MakeMove(ii, jj, false); WritePot(true); }
+    else MakeMove(ii, jj, true);
   }
 }
 
@@ -144,7 +153,7 @@ function GetMoveList()
 }
 
 function ApplyMoveList()
-{ if (IsRunning) { LastEvent="ApplyMoveList()"; return; }  
+{ if (IsRunning) { LastEvent="ApplyMoveList()"; return; }
   Init();
   var ii, jj, nn, ss=window.document.OptionsForm.MoveList.value;
   ss=ss.split(" ");
@@ -154,40 +163,10 @@ function ApplyMoveList()
     if (isNaN(ii)||isNaN(jj)||(ii<0)||(jj<0)||(ii>=Size)||(jj>=Size)) return;
     if (nn<ss.length-1) MakeMove(ii, jj, false);
     else MakeMove(ii, jj, true);
-  }  
+  }
 }
 
-function SwapTest()
-{ if (! window.document.OptionsForm.Swap.checked) return(false);
-  var ii, jj;
-  if (MoveCount==0)
-  { ii=random(4);
-    jj=random(4-ii);
-    if (random(2)<1)
-    { ii=Size-1-ii;
-      jj=Size-1-jj;
-    }
-    MakeMove(ii, jj, false);
-    WritePot(true);
-    IsRunning=false;
-    return(true);
-  }
-  if (MoveCount==1)
-  { for (ii=0; ii<Size; ii++)
-    { for (jj=0; jj<Size; jj++)
-      { if (Fld[ii][jj]!=0)
-        { if ((ii+jj<2)||(ii+jj>2*Size-4)) return(false);
-          if ((ii+jj==2)||(ii+jj==2*Size-4)) { if (random(2)<1) return(false); }
-          MakeMove(ii, jj, false);
-          WritePot(true);
-          IsRunning=false;
-          return(true);
-        }  
-      }          
-    }
-  }  
-  return(false);
-}
+
 
 function MakeMove(ii, jj, oo)
 { var ccol, kk, iis=ii, jjs=jj;
@@ -195,11 +174,11 @@ function MakeMove(ii, jj, oo)
   { if (Fld[ii][jj]!=0)
     { Fld[ii][jj]=0;
       RefreshPic(ii, jj);
-      iis=jj; 
+      iis=jj;
       jjs=ii;
       IsSwap=1;
-    } 
-    else IsSwap=0; 
+    }
+    else IsSwap=0;
   }
   ccol=((MoveCount+1+Start0)%2)*2-1;
   Fld[iis][jjs]=ccol;
@@ -211,19 +190,19 @@ function MakeMove(ii, jj, oo)
   if (History[MoveCount][1]!=jj)
   { History[MoveCount][1]=jj;
     MaxMoveCount=MoveCount+1;
-  }  
+  }
   MoveCount++;
   if (MaxMoveCount<MoveCount)
     MaxMoveCount=MoveCount;
   if (MoveCount<10)
     window.document.OptionsForm.Moves.value=" "+eval(MoveCount)+" ";
   else
-    window.document.OptionsForm.Moves.value=MoveCount;  
+    window.document.OptionsForm.Moves.value=MoveCount;
   if ((MoveCount+Start0)%2==0) window.document.OptionsForm.Msg.value=" Blue to move.";
   else window.document.OptionsForm.Msg.value=" Red to move.";
-  if ((MoveCount==2)&&(IsSwap>0))   
-    window.document.OptionsForm.Msg.value=" Swap."+window.document.OptionsForm.Msg.value; 
-  if (! oo) return; 
+  if ((MoveCount==2)&&(IsSwap>0))
+    window.document.OptionsForm.Msg.value=" Swap."+window.document.OptionsForm.Msg.value;
+  if (! oo) return;
   GetPot(0);
   //GetPot(2); ShowPot();
   WritePot(true);
@@ -244,29 +223,7 @@ function random(nn)
 { return(Math.floor(Math.random()*1000)%nn);
 }
 
-function ShowPot()
-{ var ii, jj;
-  for (ii=0; ii<Size; ii++)
-  { for (jj=0; jj<Size; jj++)
-      window.document.images[ImgNum[ii][jj]].title = 
-        Math.round(Pot[ii][jj][2])+"\n"+
-        Math.round(Pot[ii][jj][0])+"|"+
-        Math.round(Pot[ii][jj][1])+"->"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1])+"\n"+
-        Math.round(Pot[ii][jj][3])+"->"+
-        Math.round(Pot[ii][jj][2]+Pot[ii][jj][3])+"\n"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1]+Pot[ii][jj][2]+Pot[ii][jj][3])+"\n"+
-        Math.round(Bridge[ii][jj][2])+"\n"+
-        Math.round(Bridge[ii][jj][0])+"|"+
-        Math.round(Bridge[ii][jj][1])+"->"+
-        Math.round(Bridge[ii][jj][0]+Bridge[ii][jj][1])+"\n"+
-        Math.round(Bridge[ii][jj][3])+"->"+
-        Math.round(Bridge[ii][jj][2]+Bridge[ii][jj][3])+"\n"+
-        Math.round(Bridge[ii][jj][0]+Bridge[ii][jj][1]+Bridge[ii][jj][2]+Bridge[ii][jj][3])+"\n"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1]+Pot[ii][jj][2]+Pot[ii][jj][3]-
-        Bridge[ii][jj][0]-Bridge[ii][jj][1]-Bridge[ii][jj][2]-Bridge[ii][jj][3]);
-  }
-}
+
 
 function RedPotCol(vv)
 { var xx=0, hh="0123456789abcdef";
@@ -290,11 +247,11 @@ function WritePot(bb)
     { window.document.getElementById("Pot0"+ii+jj).title = Math.round(Pot[ii][jj][0]);
       window.document.getElementById("Pot1"+ii+jj).title = Math.round(Pot[ii][jj][1]);
       window.document.getElementById("Pot2"+ii+jj).title = Math.round(Pot[ii][jj][2]);
-      window.document.getElementById("Pot3"+ii+jj).title = Math.round(Pot[ii][jj][3]); 
+      window.document.getElementById("Pot3"+ii+jj).title = Math.round(Pot[ii][jj][3]);
       window.document.getElementById("Pot0"+ii+jj).style.backgroundColor = BluePotCol(Pot[ii][jj][0]);
       window.document.getElementById("Pot1"+ii+jj).style.backgroundColor = BluePotCol(Pot[ii][jj][1]);
       window.document.getElementById("Pot2"+ii+jj).style.backgroundColor = RedPotCol(Pot[ii][jj][2]);
-      window.document.getElementById("Pot3"+ii+jj).style.backgroundColor = RedPotCol(Pot[ii][jj][3]);            
+      window.document.getElementById("Pot3"+ii+jj).style.backgroundColor = RedPotCol(Pot[ii][jj][3]);
     }
   }
 }
@@ -303,7 +260,7 @@ function sign(xx)
 { if (xx<0) return(-1);
   if (xx>0) return(1);
   return(0);
-}  
+}
 
 function GetBestMove(theCol, theLevel)
 { var ii, jj, kk, ii_b, jj_b, ff=0, ii_q=0, jj_q=0, cc, pp0, pp1;
@@ -334,13 +291,13 @@ function GetBestMove(theCol, theLevel)
         pp1=Pot[ii][jj][2]+Pot[ii][jj][3];
         mmp+=pp0+pp1;
         if ((pp0<=268)||(pp1<=268)) mmp-=400; //140+128
-        vv[ii*Size+jj]=mmp;          
+        vv[ii*Size+jj]=mmp;
         if (mmp<mm)
-        { mm=mmp; 
+        { mm=mmp;
           ii_b=ii;
           jj_b=jj;
-        }  
-      }  
+        }
+      }
     }
   }
   if (theLevel>2)
@@ -349,77 +306,77 @@ function GetBestMove(theCol, theLevel)
     { for (jj=0; jj<Size; jj++)
       { if (vv[ii*Size+jj]<mm)
         { if (theCol<0)//red
-          { if ((ii>3)&&(ii<Size-1)&&(jj>0)&&(jj<3)) 
+          { if ((ii>3)&&(ii<Size-1)&&(jj>0)&&(jj<3))
             { if (Fld[ii-1][jj+2]==-theCol)
               { cc=CanConnectFarBorder(ii-1,jj+2,-theCol);
-                if (cc<2) 
-                { ii_b=ii; 
+                if (cc<2)
+                { ii_b=ii;
                   if (cc<-1) { ii_b--; cc++; }
-                  jj_b=jj-cc; 
-                  mm=vv[ii*Size+jj]; 
+                  jj_b=jj-cc;
+                  mm=vv[ii*Size+jj];
                 }
               }
             }
             if ((ii>0)&&(ii<Size-1)&&(jj==0))
             { if ((Fld[ii-1][jj+2]==-theCol)&&
                   (Fld[ii-1][jj]==0)&&(Fld[ii-1][jj+1]==0)&&(Fld[ii][jj+1]==0)&&(Fld[ii+1][jj]==0))
-                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }  
+                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }
             }
-            if ((ii>0)&&(ii<Size-4)&&(jj<Size-1)&&(jj>Size-4)) 
+            if ((ii>0)&&(ii<Size-4)&&(jj<Size-1)&&(jj>Size-4))
             { if (Fld[ii+1][jj-2]==-theCol)
-              { cc=CanConnectFarBorder(ii+1,jj-2,-theCol); 
-                if (cc<2) 
-                { ii_b=ii; 
+              { cc=CanConnectFarBorder(ii+1,jj-2,-theCol);
+                if (cc<2)
+                { ii_b=ii;
                   if (cc<-1) { ii_b++; cc++; }
-                  jj_b=jj+cc; 
-                  mm=vv[ii*Size+jj]; 
+                  jj_b=jj+cc;
+                  mm=vv[ii*Size+jj];
                 }
-              }  
+              }
             }
             if ((ii>0)&&(ii<Size-1)&&(jj==Size-1))
             { if ((Fld[ii+1][jj-2]==-theCol)&&
                   (Fld[ii+1][jj]==0)&&(Fld[ii+1][jj-1]==0)&&(Fld[ii][jj-1]==0)&&(Fld[ii-1][jj]==0))
-                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }  
+                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }
             }
           }
           else
-          { if ((jj>3)&&(jj<Size-1)&&(ii>0)&&(ii<3)) 
+          { if ((jj>3)&&(jj<Size-1)&&(ii>0)&&(ii<3))
             { if (Fld[ii+2][jj-1]==-theCol)
-              { cc=CanConnectFarBorder(ii+2,jj-1,-theCol); 
-                if (cc<2) 
-                { jj_b=jj; 
+              { cc=CanConnectFarBorder(ii+2,jj-1,-theCol);
+                if (cc<2)
+                { jj_b=jj;
                   if (cc<-1) { jj_b--; cc++; }
-                  ii_b=ii-cc; 
-                  mm=vv[ii*Size+jj]; 
+                  ii_b=ii-cc;
+                  mm=vv[ii*Size+jj];
                 }
-              }  
+              }
             }
             if ((jj>0)&&(jj<Size-1)&&(ii==0))
             { if ((Fld[ii+2][jj-1]==-theCol)&&
                   (Fld[ii][jj-1]==0)&&(Fld[ii+1][jj-1]==0)&&(Fld[ii+1][jj]==0)&&(Fld[ii][jj+1]==0))
-                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }  
+                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }
             }
-            if ((jj>0)&&(jj<Size-4)&&(ii<Size-1)&&(ii>Size-4)) 
+            if ((jj>0)&&(jj<Size-4)&&(ii<Size-1)&&(ii>Size-4))
             { if (Fld[ii-2][jj+1]==-theCol)
               { cc=CanConnectFarBorder(ii-2,jj+1,-theCol);
-                if (cc<2) 
-                { jj_b=jj; 
+                if (cc<2)
+                { jj_b=jj;
                   if (cc<-1) { jj_b++; cc++; }
-                  ii_b=ii+cc; 
-                  mm=vv[ii*Size+jj]; 
+                  ii_b=ii+cc;
+                  mm=vv[ii*Size+jj];
                 }
-              }  
+              }
             }
             if ((jj>0)&&(jj<Size-1)&&(ii==Size-1))
             { if ((Fld[ii-2][jj+1]==-theCol)&&
                   (Fld[ii][jj+1]==0)&&(Fld[ii-1][jj+1]==0)&&(Fld[ii-1][jj]==0)&&(Fld[ii][jj-1]==0))
-                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }  
-            }          
+                { ii_b=ii; jj_b=jj; mm=vv[ii*Size+jj]; }
+            }
           }
         }
       }
-    }    
-  } 
+    }
+  }
   MakeMove(ii_b, jj_b, false);
   IsRunning=false;
   if (theCol<0)
@@ -462,8 +419,8 @@ function CanConnectFarBorder(nn, mm, cc)
       { if (GetFld(nn-2,mm+1)==-cc) return(0);
         return(-1);
       }
-      if (GetFld(nn-2,mm+1)==-cc) return(-2); 
-    }  
+      if (GetFld(nn-2,mm+1)==-cc) return(-2);
+    }
   }
   else
   { if (2*nn<Size-1)
@@ -490,9 +447,9 @@ function CanConnectFarBorder(nn, mm, cc)
       { if (GetFld(nn+1,mm-2)==-cc) return(0);
         return(-1);
       }
-      if (GetFld(nn+1,mm-2)==-cc) return(-2);  
-    }  
-  }  
+      if (GetFld(nn+1,mm-2)==-cc) return(-2);
+    }
+  }
   return(1);
 }
 
@@ -503,7 +460,7 @@ function GetFld(ii, jj)
   if (jj>=Size) return(1);
   return(Fld[ii][jj]);
 }
-  
+
 function Blink(nn)
 { IsRunning=true;
   if (nn==-2)
@@ -515,19 +472,19 @@ function Blink(nn)
     WritePot(false);
     setTimeout("Blink(0)",10);
     return;
-  }    
+  }
   if (nn==14)
   { IsRunning=false;
     return;
   }
-  var ii, jj, cc=(nn%2)*(((MoveCount+Start0)%2)*2-1);  
+  var ii, jj, cc=(nn%2)*(((MoveCount+Start0)%2)*2-1);
   for (ii=0; ii<Size; ii++)
   { for (jj=0; jj<Size; jj++)
     { if ((Pot[ii][jj][0]+Pot[ii][jj][1]<=0)||(Pot[ii][jj][2]+Pot[ii][jj][3]<=0))
       { Fld[ii][jj]=cc;
         RefreshPic(ii, jj);
-      }  
-    }    
+      }
+    }
   }
   setTimeout("Blink("+eval(nn+1)+")",200);
 }
@@ -540,8 +497,8 @@ function GetPot(llevel)
     { for (kk=0; kk<4; kk++)
       { Pot[ii][jj][kk]=20000;
         Bridge[ii][jj][kk]=0;
-      }  
-    }    
+      }
+    }
   }
   for (ii=0; ii<Size; ii++)
   { if (Fld[ii][0]==0) Pot[ii][0][0]=dd;//blue border
@@ -562,13 +519,13 @@ function GetPot(llevel)
     else
     { if (Fld[Size-1][jj]<0) Pot[Size-1][jj][3]=0;
     }
-  }   
+  }
   for (kk=0; kk<2; kk++)//blue potential
   { for (ii=0; ii<Size; ii++)
     { for (jj=0; jj<Size; jj++)
         Upd[ii][jj]=true;
-    } 
-    nn=0; 
+    }
+    nn=0;
     do
     { nn++;
       bb=0;
@@ -589,8 +546,8 @@ function GetPot(llevel)
   { for (ii=0; ii<Size; ii++)
     { for (jj=0; jj<Size; jj++)
         Upd[ii][jj]=true;
-    } 
-    nn=0; 
+    }
+    nn=0;
     do
     { nn++;
       bb=0;
@@ -628,7 +585,7 @@ function SetPot(ii, jj, kk, cc, llevel)
     { if (vv[(ll+1)%6]<0) ddb=+32;
       else vv[(ll+1)%6]+=128; //512;
     }
-  }  
+  }
   for (ll=0; ll<6; ll++)
   { if ((vv[ll]>=30000)&&(vv[(ll+3)%6]>=30000))
     { ddb+=30;
@@ -641,7 +598,7 @@ function SetPot(ii, jj, kk, cc, llevel)
       tt[ll]=10;
     }
     else tt[ll]=1;
-    if (mm>vv[ll]) mm=vv[ll];     
+    if (mm>vv[ll]) mm=vv[ll];
   }
   nn=0;
   for (ll=0; ll<6; ll++)
@@ -653,21 +610,21 @@ function SetPot(ii, jj, kk, cc, llevel)
     if (nn<2)
     { oo=30000;
       for (ll=0; ll<6; ll++)
-      { if ((vv[ll]>mm)&&(oo>vv[ll])) oo=vv[ll];     
+      { if ((vv[ll]>mm)&&(oo>vv[ll])) oo=vv[ll];
       }
       if (oo<=mm+104) { Bridge[ii][jj][kk]=bb-(oo-mm)/4; mm-=64; }
       mm+=oo;
       mm/=2;
     }
   }
-  
+
   if ((ii>0)&&(ii<Size-1)&&(jj>0)&&(jj<Size-1)) Bridge[ii][jj][kk]+=ddb;
   else Bridge[ii][jj][kk]-=2;
   if (((ii==0)||(ii==Size-1))&&((jj==0)||(jj==Size-1))) Bridge[ii][jj][kk]/=2; // /=4
   if (Bridge[ii][jj][kk]>68) Bridge[ii][jj][kk]=68; //66
-  
+
   if (Fld[ii][jj]==cc)
-  { if (mm<Pot[ii][jj][kk]) 
+  { if (mm<Pot[ii][jj][kk])
     { Pot[ii][jj][kk]=mm;
       SetUpd(ii+1,jj,cc);
       SetUpd(ii,jj+1,cc);
@@ -676,19 +633,19 @@ function SetPot(ii, jj, kk, cc, llevel)
       SetUpd(ii,jj-1,cc);
       SetUpd(ii+1,jj-1,cc);
       return(1);
-    }  
+    }
     return(0);
   }
-  if (mm+dd<Pot[ii][jj][kk]) 
+  if (mm+dd<Pot[ii][jj][kk])
   { Pot[ii][jj][kk]=mm+dd;
     SetUpd(ii+1,jj,cc);
     SetUpd(ii,jj+1,cc);
     SetUpd(ii-1,jj+1,cc);
     SetUpd(ii-1,jj,cc);
     SetUpd(ii,jj-1,cc);
-    SetUpd(ii+1,jj-1,cc);  
+    SetUpd(ii+1,jj-1,cc);
     return(1);
-  }  
+  }
   return(0);
 }
 
@@ -712,16 +669,16 @@ function SetUpd(ii,jj,cc)
 
 function Clicked(ii, jj)
 { if (IsOver) return;
-  if (IsRunning) { LastEvent="Clicked("+ii+","+jj+")"; return; }  
-  if (Fld[ii][jj]!=0) 
+  if (IsRunning) { LastEvent="Clicked("+ii+","+jj+")"; return; }
+  if (Fld[ii][jj]!=0)
   { if ((MoveCount==1)&&(window.document.OptionsForm.Swap.checked)) MakeMove(ii,jj,false);
     return;
-  }  
+  }
   if (! IsPlayer[(MoveCount+Start0+1)%2]) return;
   MakeMove(ii, jj, true);
   window.document.OptionsForm.HelpButton.focus();
   window.document.OptionsForm.HelpButton.blur();
-}  
+}
 
 function RefreshPic(ii, jj)
 { window.document.images[ImgNum[ii][jj]].src = Pic[1+Fld[ii][jj]].src;
@@ -766,3 +723,6 @@ function ShowHelp()
       "\nGood luck!");
 }
 
+function Resize()
+{ if(navigator.appName == "Netscape") history.go(0);
+}
