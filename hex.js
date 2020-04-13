@@ -32,7 +32,7 @@ Pic= new Array(3);
 Pic[0] = new Image();
 Pic[0].src = "hex_r.gif";
 Pic[1] = new Image();
-Pic[1].src = "hex_t.gif";
+Pic[1].src = "test.png";
 Pic[2] = new Image();
 Pic[2].src = "hex_b.gif";
 
@@ -54,7 +54,6 @@ function Init()
   MoveCount=0;
   MaxMoveCount=0;
   RefreshScreen();
-  WritePot(true);
   IsOver=false;
   if ((MoveCount+Start0)%2==0) window.document.OptionsForm.Msg.value=" Blue to move.";
   else window.document.OptionsForm.Msg.value=" Red to move.";    
@@ -87,7 +86,7 @@ function Timer()
   }
   if (IsOver) return;
   if (IsRunning) return;
-  if (IsPlayer[(MoveCount+Start0+1)%2]) { WritePot(true); return; }
+  if (IsPlayer[(MoveCount+Start0+1)%2]) {return; }
   IsRunning=true;
   var ll=Level[(MoveCount+Start0+1)%2];
   if (SwapTest()) return;
@@ -118,7 +117,6 @@ function Back()
       window.document.OptionsForm.Moves.value=MoveCount;
     if ((MoveCount+Start0)%2==0) window.document.OptionsForm.Msg.value=" Blue to move.";
     else window.document.OptionsForm.Msg.value=" Red to move.";  
-    WritePot(true);        
   }
 }
 
@@ -127,7 +125,7 @@ function Replay()
   if (MoveCount<MaxMoveCount)
   { var ii=History[MoveCount][0];
     var jj=History[MoveCount][1];
-    if (MoveCount<MaxMoveCount-1) { MakeMove(ii, jj, false); WritePot(true); }  
+    if (MoveCount<MaxMoveCount-1) { MakeMove(ii, jj, false);}  
     else MakeMove(ii, jj, true);     
   }
 }
@@ -168,7 +166,6 @@ function SwapTest()
       jj=Size-1-jj;
     }
     MakeMove(ii, jj, false);
-    WritePot(true);
     IsRunning=false;
     return(true);
   }
@@ -179,7 +176,6 @@ function SwapTest()
         { if ((ii+jj<2)||(ii+jj>2*Size-4)) return(false);
           if ((ii+jj==2)||(ii+jj==2*Size-4)) { if (random(2)<1) return(false); }
           MakeMove(ii, jj, false);
-          WritePot(true);
           IsRunning=false;
           return(true);
         }  
@@ -225,8 +221,6 @@ function MakeMove(ii, jj, oo)
     window.document.OptionsForm.Msg.value=" Swap."+window.document.OptionsForm.Msg.value; 
   if (! oo) return; 
   GetPot(0);
-  //GetPot(2); ShowPot();
-  WritePot(true);
   if (ccol<0)
   { if ((Pot[ii][jj][2]>0)||(Pot[ii][jj][3]>0)) return;
     window.document.OptionsForm.Msg.value=" Red has won !";
@@ -244,60 +238,9 @@ function random(nn)
 { return(Math.floor(Math.random()*1000)%nn);
 }
 
-function ShowPot()
-{ var ii, jj;
-  for (ii=0; ii<Size; ii++)
-  { for (jj=0; jj<Size; jj++)
-      window.document.images[ImgNum[ii][jj]].title = 
-        Math.round(Pot[ii][jj][2])+"\n"+
-        Math.round(Pot[ii][jj][0])+"|"+
-        Math.round(Pot[ii][jj][1])+"->"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1])+"\n"+
-        Math.round(Pot[ii][jj][3])+"->"+
-        Math.round(Pot[ii][jj][2]+Pot[ii][jj][3])+"\n"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1]+Pot[ii][jj][2]+Pot[ii][jj][3])+"\n"+
-        Math.round(Bridge[ii][jj][2])+"\n"+
-        Math.round(Bridge[ii][jj][0])+"|"+
-        Math.round(Bridge[ii][jj][1])+"->"+
-        Math.round(Bridge[ii][jj][0]+Bridge[ii][jj][1])+"\n"+
-        Math.round(Bridge[ii][jj][3])+"->"+
-        Math.round(Bridge[ii][jj][2]+Bridge[ii][jj][3])+"\n"+
-        Math.round(Bridge[ii][jj][0]+Bridge[ii][jj][1]+Bridge[ii][jj][2]+Bridge[ii][jj][3])+"\n"+
-        Math.round(Pot[ii][jj][0]+Pot[ii][jj][1]+Pot[ii][jj][2]+Pot[ii][jj][3]-
-        Bridge[ii][jj][0]-Bridge[ii][jj][1]-Bridge[ii][jj][2]-Bridge[ii][jj][3]);
-  }
-}
 
-function RedPotCol(vv)
-{ var xx=0, hh="0123456789abcdef";
-  if (vv>0) xx=vv;
-  var nn=Math.floor(255/(1+xx/255));
-  return("#"+hh.charAt(Math.floor(nn/16))+hh.charAt(nn%16)+"0000");
-}
-function BluePotCol(vv)
-{ var xx=0, hh="0123456789abcdef";
-  if (vv>0) xx=vv;
-  var nn=Math.floor(255/(1+xx/255));
-  return("#0000"+hh.charAt(Math.floor(nn/16))+hh.charAt(nn%16));
-}
 
-function WritePot(bb)
-{ var ii, jj;
-  if (!IsAI) return;
-  if (bb) GetPot(2);
-  for (ii=0; ii<Size; ii++)
-  { for (jj=0; jj<Size; jj++)
-    { window.document.getElementById("Pot0"+ii+jj).title = Math.round(Pot[ii][jj][0]);
-      window.document.getElementById("Pot1"+ii+jj).title = Math.round(Pot[ii][jj][1]);
-      window.document.getElementById("Pot2"+ii+jj).title = Math.round(Pot[ii][jj][2]);
-      window.document.getElementById("Pot3"+ii+jj).title = Math.round(Pot[ii][jj][3]); 
-      window.document.getElementById("Pot0"+ii+jj).style.backgroundColor = BluePotCol(Pot[ii][jj][0]);
-      window.document.getElementById("Pot1"+ii+jj).style.backgroundColor = BluePotCol(Pot[ii][jj][1]);
-      window.document.getElementById("Pot2"+ii+jj).style.backgroundColor = RedPotCol(Pot[ii][jj][2]);
-      window.document.getElementById("Pot3"+ii+jj).style.backgroundColor = RedPotCol(Pot[ii][jj][3]);            
-    }
-  }
-}
+
 
 function sign(xx)
 { if (xx<0) return(-1);
@@ -423,12 +366,12 @@ function GetBestMove(theCol, theLevel)
   MakeMove(ii_b, jj_b, false);
   IsRunning=false;
   if (theCol<0)
-  { if ((Pot[ii_b][jj_b][2]>140)||(Pot[ii_b][jj_b][3]>140)) { WritePot(false); return; }
+  { if ((Pot[ii_b][jj_b][2]>140)||(Pot[ii_b][jj_b][3]>140)) {return; }
     window.document.OptionsForm.Msg.value=" Red has won !";
     Blink(-2);
   }
   else
-  { if ((Pot[ii_b][jj_b][0]>140)||(Pot[ii_b][jj_b][1]>140)) { WritePot(false); return; }
+  { if ((Pot[ii_b][jj_b][0]>140)||(Pot[ii_b][jj_b][1]>140)) {return; }
     window.document.OptionsForm.Msg.value=" Blue has won !";
     Blink(-2);
   }
@@ -512,7 +455,6 @@ function Blink(nn)
   }
   if (nn==-1)
   { GetPot(0);
-    WritePot(false);
     setTimeout("Blink(0)",10);
     return;
   }    
