@@ -1,4 +1,4 @@
-var i, j, k, IsOver=true, IsStart0, Start, Start0, Size=11, IsRunning=false, LastEvent="";
+var i, j, k, IsOver=true, IsStart0=true, Start, Start0, Size=11, IsRunning=false, LastEvent="";
 var MoveCount, MaxMoveCount, MaxFld=Size*Size, IsSwap, ActiveColor=0;
 IsPlayer = new Array(2);
 Level = new Array(2);  
@@ -30,16 +30,16 @@ for (i=0; i<MaxFld+1; i++)
   History[i] = new Array(2);
 Pic= new Array(3);
 Pic[0] = new Image();
-Pic[0].src = "hex_r.gif";
+Pic[0].src = "red.png";
 Pic[1] = new Image();
-Pic[1].src = "test.png";
+Pic[1].src = "white.png";
 Pic[2] = new Image();
-Pic[2].src = "hex_b.gif";
+Pic[2].src = "blue.png";
 
-IsStart0=true;
+
 IsPlayer[0]=true;
 IsPlayer[1]=false;
-Level[0]=2;
+Level[0]=1;
 Level[1]=3;
 
 function Init()
@@ -75,7 +75,6 @@ function SetLevel(nn, mm)
   Level[nn]=mm;
 }
 
-var IsAI=0;
 
 
 function Timer()
