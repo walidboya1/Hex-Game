@@ -25,7 +25,7 @@
     <script src="assets/js/thesaas.min.js"></script>
     <script src="assets/js/script.js"></script>
 
-<section class="Gameplay" style="display: none;">
+<section class="Gameplay" >
 <!--
       |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
       | Topbar
@@ -67,12 +67,7 @@
 
       <input type="radio" name="Red" checked="" value="Red: Player" onclick="javascript:SetOption(0,0)"> Red: Player
       <input type="radio" name="Red" value="Red: Computer" onclick="javascript:SetOption(0,1)"> Red: Computer
-          <br>
-          <br>
-                Level:
-                  <input type="radio" name="RedLevel" checked="" value="1" onclick="javascript:SetLevel(0,1)">1
-                  <input type="radio" name="RedLevel" value="2" onclick="javascript:SetLevel(0,2)">2
-                  <input type="radio" name="RedLevel" value="3" onclick="javascript:SetLevel(0,3)">3
+
 
 </div>
    
@@ -83,13 +78,6 @@
 <div>
       <input type="radio" name="Blue" value="Blue: Player" onclick="javascript:SetOption(1,0)"> Blue: Player
       <input type="radio" name="Blue" checked="" value="Blue: Computer" onclick="javascript:SetOption(1,1)"> Blue: Computer
-
-          <br>
-          <br>
-                Level:
-                  <input type="radio" name="BlueLevel" value="1" onclick="javascript:SetLevel(1,1)">1
-                  <input type="radio" name="BlueLevel" value="2" onclick="javascript:SetLevel(1,2)">2
-                  <input type="radio" name="BlueLevel" checked="" value="3" onclick="javascript:SetLevel(1,3)">3
 
 </div>
    
@@ -162,7 +150,7 @@
   <td>&nbsp;</td>
 <table noborder="">
 <tbody><tr>
-  <td><table border="0" cellpadding="10" cellspacing="10" ><tbody><tr><td background="hex_t.gif" align="center"><font size="1">
+  <td><table border="0" cellpadding="10" cellspacing="10" ><tbody><tr><td align="center"><font size="1">
       <script language="JavaScript">
       k=0;
       for (i=0; i < Size-1; i++)
@@ -203,7 +191,7 @@
     </header>
 </section>
 
-<section  class="coinplay" >
+<section  class="coinplay" style="display: none;">
        <header class="header  h-fullscreen p-0 bg-primary overflow-hidden"style="background-image: linear-gradient(to right, #434343 0%, black 100%);">
       <canvas class="constellation"></canvas>
 
@@ -217,7 +205,7 @@
     <div id="heads" class="heads"></div>
     <div id="tails" class="tails"></div>
   </div>
-  <button class="btn btn-outline btn-primary px-10" id="flip" >Flip the COIN</button>
+  <button class="btn btn-outline btn-primary px-10" id="flip" >Flip this thing</button>
   <p><span id="status"></span></p>
 </div>
 </header>
@@ -225,7 +213,8 @@
 
 
 <script language="JavaScript">
-  
+  startgame(1);
+
   const coin = document.querySelector('#coin');
 const button = document.querySelector('#flip');
 const status = document.querySelector('#status');
@@ -249,7 +238,7 @@ function processResult(result) {
     }
 
    if (result === selectedValue) {
-      startgame(1);
+      
     } else {
       document.getElementById("blue").checked = true;
       startgame(0);
