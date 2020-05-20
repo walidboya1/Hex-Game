@@ -25,7 +25,7 @@
     <script src="assets/js/thesaas.min.js"></script>
     <script src="assets/js/script.js"></script>
 
-<section class="Gameplay" >
+<section class="Gameplay" style="display: none;">
 <!--
       |‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
       | Topbar
@@ -41,8 +41,7 @@
             </a>
           </div>
 
-
-       
+   
 
           <div class="topbar-right">
             <button class="drawer-toggler ml-12" style="color: white;">&#9776;</button>
@@ -57,7 +56,7 @@
   <div align="center">
  <div>   
      <input type="button" class="btn btn-primary" value="NEW" onclick="javascript:Init()">
-     <input type="button" class="btn btn-primary" value="HELP" onclick="javascript:ShowHelp()" name="HelpButton">
+     <input type="button" class="btn btn-primary" value="HELP" onclick="javascript:Help()" name="HelpButton">
 </div>
    
              
@@ -74,8 +73,12 @@
              
         <hr>
 
+        <div>
+          <input type="radio" name="Start" checked="" value="Red" id="Red" onclick="javascript:SetOption(2,1)"> Red begins
+          <input type="radio" name="Start" value="Blue" id="blue" onclick="javascript:SetOption(2,0)"> Blue begins
+    </div>
         
-         
+         <hr>
 <div>        
       <input type="checkbox" name="Swap" > swap rule
 </div>
@@ -90,22 +93,10 @@
       <input type="button" class="btn btn-outline btn-primary px-10" value=" 0 " disabled="" name="Moves">
       <input type="button" class="btn btn-outline btn-primary px-10" value=">" onclick="javascript:Replay()" title="one move forward">
       <input type="button" class="btn btn-outline btn-primary px-10" value=">>" onclick="javascript:Replay();Replay()" title="two moves forward">
-<br>
-<br>
-      <input size="18" name="Msg" readonly="">
+
 </div>
    
              
-        <hr>
-
-      
-<div>
-       Move list:<br><textarea cols="14" rows="3" name="MoveList"></textarea>
-       <br>
-       <input type="button" value="GET" onclick="javascript:GetMoveList()">
-       <input type="button" value="APPLY" onclick="javascript:ApplyMoveList()">
-          
-</div>
 
 <br>
 
@@ -128,7 +119,7 @@
 
      
 <div align="center">
-
+  <input class="bg-dark d-inline-block text-center " size="18" name="Msg" readonly="">
   <td>&nbsp;</td>
 <table noborder="">
 <tbody><tr>
@@ -173,7 +164,7 @@
     </header>
 </section>
 
-<section  class="coinplay" style="display: none;">
+<section  class="coinplay">
        <header class="header  h-fullscreen p-0 bg-primary overflow-hidden"style="background-image: linear-gradient(to right, #434343 0%, black 100%);">
       <canvas class="constellation"></canvas>
 
@@ -195,7 +186,6 @@
 
 
 <script language="JavaScript">
-  startgame(1);
 
   const coin = document.querySelector('#coin');
 const button = document.querySelector('#flip');
@@ -220,7 +210,7 @@ function processResult(result) {
     }
 
    if (result === selectedValue) {
-      
+    startgame(1);
     } else {
       document.getElementById("blue").checked = true;
       startgame(0);

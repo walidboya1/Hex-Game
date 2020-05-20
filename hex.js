@@ -68,6 +68,25 @@ function SetOption(PLAYEER, mm)
   else IsStart0=mm; 
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; 
+}
+
+function firstAImove()
+{
+
+  if (MoveCount==0)
+  {
+    var num = Size -1 ;
+    number= getRandomInt(0,num);
+    letter= getRandomInt(0,num);
+    MakeMove(number, letter, false);
+    IsRunning=false;
+    return(true);
+  }
+}
 
 
 function Timer()
@@ -82,6 +101,7 @@ function Timer()
   IsRunning=true;
 
   if (SwapTest()) return;
+  if (firstAImove()) return;
   setTimeout("GetBestMove("+eval(((MoveCount+1+Start0)%2)*2-1)+")",10);
 }
 
@@ -121,30 +141,7 @@ function Replay()
   }
 }
 
-function GetMoveList()
-{ var number, letter, PLAYEER, ss="";
-  for (PLAYEER=0; PLAYEER<MaxMoveCount; PLAYEER++)
-  { number=History[PLAYEER][0];
-    letter=History[PLAYEER][1];
-    if (PLAYEER>0) ss+=" ";
-    ss+=String.fromCharCode(65+letter)+eval(number+1);
-  }
-  window.document.OptionsForm.MoveList.value=ss;
-}
 
-function ApplyMoveList()
-{ if (IsRunning) { LastEvent="ApplyMoveList()"; return; }  
-  Init();
-  var number, letter, PLAYEER, ss=window.document.OptionsForm.MoveList.value;
-  ss=ss.split(" ");
-  for (PLAYEER=0; PLAYEER<ss.length; PLAYEER++)
-  { letter=ss[PLAYEER].charCodeAt(0)-65;
-    number=parseInt(ss[PLAYEER].substr(1,2))-1;
-    if (isNaN(number)||isNaN(letter)||(number<0)||(letter<0)||(number>=Size)||(letter>=Size)) return;
-    if (PLAYEER<ss.length-1) MakeMove(number, letter, false);
-    else MakeMove(number, letter, true);
-  }  
-}
 
 function SwapTest()
 { if (! window.document.OptionsForm.Swap.checked) return(false);
@@ -176,7 +173,7 @@ function SwapTest()
   return(false);
 }
 
-function MakeMove(number, letter, oo)
+function MakeMove(number, letter, finished)
 { var ActColol, border, numbers=number, letters=letter;
   if (MoveCount==1)
   { if (Field[number][letter]!=0)
@@ -210,119 +207,21 @@ function MakeMove(number, letter, oo)
   else window.document.OptionsForm.Msg.value=" Red to move.";
   if ((MoveCount==2)&&(IsSwap>0))   
     window.document.OptionsForm.Msg.value=" Swap."+window.document.OptionsForm.Msg.value; 
-  if (! oo) return; 
+  if (! finished) return; 
   CheckPot();
   if (ActColol<0)
   { if ((Pot[number][letter][2]>0)||(Pot[number][letter][3]>0)) return;
     window.document.OptionsForm.Msg.value=" Red has won !";
     Blink(0);
-    alert("Red has won !");
   }
   else
   { if ((Pot[number][letter][0]>0)||(Pot[number][letter][1]>0)) return;
     window.document.OptionsForm.Msg.value=" Blue has won !";
     Blink(0);
-    alert("Blue has won !");
   }
   IsOver=true;
 }
 
-function random(PLAYEER)
-{ return(Math.floor(Math.random()*1000)%PLAYEER);
-}
-
-
-
-
-
-function sign(xx)
-{ if (xx<0) return(-1);
-  if (xx>0) return(1);
-  return(0);
-}  
-
-function GetBestMove(theCol)
-{ var number, letter, border, number_b, letter_b, ff=0, number_q=0, letter_q=0, ActCol, pp0, pp1;
-  corner=new Array();
-  if (MoveCount>0) ff=190/(MoveCount*MoveCount);
-  addpot=20000;
-  for (number=0; number<Size; number++)
-  { for (letter=0; letter<Size; letter++)
-    { if (Field[number][letter]!=0)
-      { number_q+=2*number+1-Size;
-        letter_q+=2*letter+1-Size;
-      }
-    }
-  }
-  number_q=sign(number_q);
-  letter_q=sign(letter_q);
-  for (number=0; number<Size; number++)
-  { for (letter=0; letter<Size; letter++)
-    { if (Field[number][letter]==0)
-      { mmp=Math.random();
-        mmp+=(Math.abs(number-5)+Math.abs(letter-5))*ff;
-        mmp+=8*(number_q*(number-5)+letter_q*(letter-5))/(MoveCount+1);
-        pp0=Pot[number][letter][0]+Pot[number][letter][1];
-        pp1=Pot[number][letter][2]+Pot[number][letter][3];
-        mmp+=pp0+pp1;
-        if ((pp0<=268)||(pp1<=268)) mmp-=400; //140+128
-        corner[number*Size+letter]=mmp;          
-        if (mmp<addpot)
-        { addpot=mmp; 
-          number_b=number;
-          letter_b=letter;
-        }  
-      }  
-    }
-  }
-
-  MakeMove(number_b, letter_b, false);
-  IsRunning=false;
-  if (theCol<0)
-  { if ((Pot[number_b][letter_b][2]>140)||(Pot[number_b][letter_b][3]>140)) {return; }
-    window.document.OptionsForm.Msg.value=" Red has won !";
-    Blink(-2);
-    alert("Red has won !");
-  }
-  else
-  { if ((Pot[number_b][letter_b][0]>140)||(Pot[number_b][letter_b][1]>140)) {return; }
-    window.document.OptionsForm.Msg.value=" Blue has won !";
-    Blink(-2);
-    alert("Blue has won !");
-  }
-  IsOver=true;
-}
-
-
-
-
-  
-function Blink(PLAYEER)
-{ IsRunning=true;
-  if (PLAYEER==-2)
-  { setTimeout("Blink(-1)",10);
-    return;
-  }
-  if (PLAYEER==-1)
-  { CheckPot();
-    setTimeout("Blink(0)",10);
-    return;
-  }    
-  if (PLAYEER==14)
-  { IsRunning=false;
-    return;
-  }
-  var number, letter, ActCol=(PLAYEER%2)*(((MoveCount+Start0)%2)*2-1);  
-  for (number=0; number<Size; number++)
-  { for (letter=0; letter<Size; letter++)
-    { if ((Pot[number][letter][0]+Pot[number][letter][1]<=0)||(Pot[number][letter][2]+Pot[number][letter][3]<=0))
-      { Field[number][letter]=ActCol;
-        RefreshPic(number, letter);
-      }  
-    }    
-  }
-  setTimeout("Blink("+eval(PLAYEER+1)+")",200);
-}
 
 function CheckPot()
 { var number, letter, border, addpot, mmp, PLAYEER, bb, dd=128;
@@ -406,7 +305,7 @@ function SetPot(number, letter, border, ActCol)
 { Upd[number][letter]=false;
   Bridge[number][letter][border]=0;
   if (Field[number][letter]==-ActCol) return(0);
-  var ll, addpot, corcon=0, PLAYEER, oo=0, dd=140, bb=66;
+  var ll, addpot, corcon=0, PLAYEER, finished=0, dd=140, bb=66;
   if (ActCol!=ActiveColor) bb=52;
   corner[0]=PotVal(number+1,letter,border,ActCol);
   corner[1]=PotVal(number,letter+1,border,ActCol);
@@ -484,6 +383,82 @@ function SetUpd(number,letter,ActCol)
   Upd[number][letter]=true;
 }
 
+
+
+function random(PLAYEER)
+{ return(Math.floor(Math.random()*1000)%PLAYEER);
+}
+
+
+
+
+
+function sign(x)
+{ if (x<0) return(-1);
+  if (x>0) return(1);
+  return(0);
+}  
+
+function GetBestMove(theCol)
+{ var number, letter, border, number_b, letter_b, ff=0, number_q=0, letter_q=0, ActCol, pp0, pp1;
+  corner=new Array();
+  
+  
+  if (MoveCount>0) ff=190/(MoveCount*MoveCount);
+  addpot=20000;
+  for (number=0; number<Size; number++)
+  { for (letter=0; letter<Size; letter++)
+    { if (Field[number][letter]!=0)
+      { number_q+=2*number+1-Size;
+        letter_q+=2*letter+1-Size;
+      }
+    }
+  }
+  number_q=sign(number_q);
+  letter_q=sign(letter_q);
+  for (number=0; number<Size; number++)
+  { for (letter=0; letter<Size; letter++)
+    { if (Field[number][letter]==0)
+      { mmp=Math.random();
+        mmp+=(Math.abs(number-5)+Math.abs(letter-5))*ff;
+        mmp+=8*(number_q*(number-5)+letter_q*(letter-5))/(MoveCount+1);
+        pp0=Pot[number][letter][0]+Pot[number][letter][1];
+        pp1=Pot[number][letter][2]+Pot[number][letter][3];
+        mmp+=pp0+pp1;
+        if ((pp0<=268)||(pp1<=268)) mmp-=400; //140+128
+        corner[number*Size+letter]=mmp;          
+        if (mmp<addpot)
+        { addpot=mmp; 
+          number_b=number;
+          letter_b=letter;
+        }  
+      }  
+    }
+  }
+  
+  MakeMove(number_b, letter_b, false);
+  IsRunning=false;
+  if (theCol<0)
+  { if ((Pot[number_b][letter_b][2]>140)||(Pot[number_b][letter_b][3]>140)) {return; }
+    window.document.OptionsForm.Msg.value=" Red has won !";
+    Blink(-2);
+  }
+  else
+  { if ((Pot[number_b][letter_b][0]>140)||(Pot[number_b][letter_b][1]>140)) {return; }
+    window.document.OptionsForm.Msg.value=" Blue has won !";
+    Blink(-2);
+  }
+  IsOver=true;
+}
+
+
+
+
+  
+
+
+
+
 function Clicked(number, letter)
 { if (IsOver) return;
   if (IsRunning) { LastEvent="Clicked("+number+","+letter+")"; return; }  
@@ -493,6 +468,8 @@ function Clicked(number, letter)
   }  
   if (! IsPlayer[(MoveCount+Start0+1)%2]) return;
   MakeMove(number, letter, true);
+  window.document.OptionsForm.HelpButton.focus();
+  window.document.OptionsForm.HelpButton.blur();
 }  
 
 function RefreshPic(number, letter)
@@ -515,7 +492,7 @@ function RefreshScreen()
     window.document.OptionsForm.Moves.value=MoveCount;
 }
 
-function ShowHelp()
+function Help()
 { alert("Hex is a board game for two players. It was"+
       "\nindependently invented by Piet Hein in 1942"+
       "\nand John Nash in 1948 and became popular"+
@@ -539,3 +516,29 @@ function ShowHelp()
       "\nGood luck!");
 }
 
+function Blink(PLAYEER)
+{ IsRunning=true;
+  if (PLAYEER==-2)
+  { setTimeout("Blink(-1)",10);
+    return;
+  }
+  if (PLAYEER==-1)
+  { CheckPot();
+    setTimeout("Blink(0)",10);
+    return;
+  }    
+  if (PLAYEER==14)
+  { IsRunning=false;
+    return;
+  }
+  var number, letter, ActCol=(PLAYEER%2)*(((MoveCount+Start0)%2)*2-1);  
+  for (number=0; number<Size; number++)
+  { for (letter=0; letter<Size; letter++)
+    { if ((Pot[number][letter][0]+Pot[number][letter][1]<=0)||(Pot[number][letter][2]+Pot[number][letter][3]<=0))
+      { Field[number][letter]=ActCol;
+        RefreshPic(number, letter);
+      }  
+    }    
+  }
+  setTimeout("Blink("+eval(PLAYEER+1)+")",200);
+}
