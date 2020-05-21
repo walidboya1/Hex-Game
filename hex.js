@@ -1,4 +1,4 @@
-var i, j, IsOver=true, IsStart0=true, Start0, Size=5, IsRunning=false, LastEvent="";
+var i, j, IsOver=true, IsStart0=true, Start0, Size=11, IsRunning=false, LastEvent="";
 var MoveCount, MaxMoveCount, MaxField=Size*Size, IsSwap, ActiveColor=0;
 IsPlayer = new Array(2);
 ImgNum = new Array(Size);
@@ -68,25 +68,6 @@ function SetOption(PLAYEER, mm)
   else IsStart0=mm; 
 }
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; 
-}
-
-function firstAImove()
-{
-
-  if (MoveCount==0)
-  {
-    var num = Size -1 ;
-    number= getRandomInt(0,num);
-    letter= getRandomInt(0,num);
-    MakeMove(number, letter, false);
-    IsRunning=false;
-    return(true);
-  }
-}
 
 
 function Timer()
@@ -101,7 +82,8 @@ function Timer()
   IsRunning=true;
 
   if (SwapTest()) return;
-  if (firstAImove()) return;
+
+  CheckPot();
   setTimeout("GetBestMove("+eval(((MoveCount+1+Start0)%2)*2-1)+")",10);
 }
 
