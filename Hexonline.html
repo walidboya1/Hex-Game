@@ -88,17 +88,19 @@
 
     
 <div>
-      <input type="button" class="btn btn-outline btn-primary px-10" value="<<" onclick="javascript:Back();Back()" title="two moves back">
-      <input type="button" class="btn btn-outline btn-primary px-10" value="<" onclick="javascript:Back()" title="one move back">
       <input type="button" class="btn btn-outline btn-primary px-10" value=" 0 " disabled="" name="Moves">
-      <input type="button" class="btn btn-outline btn-primary px-10" value=">" onclick="javascript:Forward()" title="one move forward">
-      <input type="button" class="btn btn-outline btn-primary px-10" value=">>" onclick="javascript:Forward();Forward()" title="two moves forward">
-
 </div>
    
              
+        <hr>
 
-<br>
+    
+<div>   
+      <?php
+          $query = "SELECT * FROM user where id = '".$_SESSION['user']."'";
+          
+      ?>
+</div>
 
      
 </div>

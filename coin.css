@@ -1,6 +1,4 @@
-
-
-div.container1 {
+div.container1 {   
   margin: auto;
   display: flex;
   flex-direction: column;
